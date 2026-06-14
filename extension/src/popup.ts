@@ -1,6 +1,7 @@
 // extension/src/popup.ts
 import { supabase } from './supabaseClient';
 import type { ExtractionResult, JobFields } from './types';
+import { extractFromDocument } from './extraction/extract';
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 const loginForm = $('login') as HTMLFormElement;
@@ -22,7 +23,21 @@ async function activeTabId(): Promise<number> {
 
 async function runExtraction(): Promise<ExtractionResult> {
   const tabId = await activeTabId();
-  return await chrome.tabs.sendMessage(tabId, { type: 'EXTRACT' });
+  const [injection] = await chrome.scripting.executeScript({
+    target: { tabId },
+    func: () => ({
+      html: document.documentElement.outerHTML,
+      selection: window.getSelection()?.toString() ?? '',
+      text: (document.body as HTMLElement | null)?.innerText ?? '',
+      url: location.href,
+    }),
+  });
+  const raw = injection.result as { html: string; selection: string; text: string; url: string };
+  const doc = new DOMParser().parseFromString(raw.html, 'text/html');
+  const result = extractFromDocument(doc, raw.selection, raw.url);
+  const liveText = raw.text.replace(/\s+/g, ' ').trim().slice(0, 12000);
+  if (liveText) result.pageText = liveText;
+  return result;
 }
 
 async function llmFill(result: ExtractionResult): Promise<JobFields> {
