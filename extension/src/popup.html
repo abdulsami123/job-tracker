@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+  <head><meta charset="utf-8" /><link rel="stylesheet" href="./styles.css" /></head>
+  <body>
+    <div id="app">
+      <!-- Login view -->
+      <form id="login" hidden>
+        <h1>Sign in</h1>
+        <input id="email" type="email" placeholder="email" autocomplete="username" />
+        <input id="password" type="password" placeholder="password" autocomplete="current-password" />
+        <button type="submit">Sign in</button>
+        <p id="login-error" class="error"></p>
+      </form>
+
+      <!-- Capture view -->
+      <form id="capture" hidden>
+        <h1 id="status">Reading page…</h1>
+        <label>Company<input id="f-company" /></label>
+        <label>Position<input id="f-position" /></label>
+        <label>Applied<input id="f-applied" type="date" /></label>
+        <label>Description<textarea id="f-description" rows="4"></textarea></label>
+        <input id="f-link" type="hidden" />
+        <button type="submit" id="save">Save (Enter)</button>
+        <p id="capture-msg" class="msg"></p>
+      </form>
+    </div>
+    <script type="module" src="./popup.ts"></script>
+  </body>
+</html>
