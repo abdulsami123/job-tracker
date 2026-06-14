@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+
+# Env / secrets — NEVER commit real keys
+.env
+.env.local
+.env*.local
+
+# Build output
+dist/
+build/
+.next/
+out/
+
+# Supabase local
+supabase/.temp/
+supabase/.branches/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
