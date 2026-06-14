@@ -45,4 +45,36 @@ describe('readJsonLd', () => {
     document.head.appendChild(s);
     expect(readJsonLd(document)).toBeNull();
   });
+
+  it('reads JobPosting when @type is an array', () => {
+    setLd({
+      '@type': ['JobPosting', 'Offer'],
+      title: 'QA Engineer',
+      hiringOrganization: { name: 'Acme' },
+      description: 'Test things',
+    });
+    expect(readJsonLd(document)).toEqual({
+      company: 'Acme', position: 'QA Engineer', description: 'Test things',
+    });
+  });
+
+  it('reads company when hiringOrganization is an array', () => {
+    setLd({
+      '@type': 'JobPosting',
+      title: 'SRE',
+      hiringOrganization: [{ name: 'Globex' }],
+      description: 'Ops',
+    });
+    expect(readJsonLd(document)?.company).toBe('Globex');
+  });
+
+  it('does not crash when hiringOrganization is a string reference', () => {
+    setLd({
+      '@type': 'JobPosting',
+      title: 'PM',
+      hiringOrganization: 'https://example.com/#org',
+      description: 'Lead',
+    });
+    expect(readJsonLd(document)?.company).toBe('');
+  });
 });

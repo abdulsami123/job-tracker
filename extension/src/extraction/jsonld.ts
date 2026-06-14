@@ -17,6 +17,14 @@ function isJobPosting(obj: Record<string, unknown>): boolean {
   return t === 'JobPosting' || (Array.isArray(t) && t.includes('JobPosting'));
 }
 
+function orgName(org: unknown): string {
+  if (!org) return '';
+  if (typeof org === 'string') return '';                 // bare @id/URL reference — no inline name
+  if (Array.isArray(org)) return orgName(org[0]);         // take the first organization
+  if (typeof org === 'object') return String((org as Record<string, unknown>)['name'] ?? '');
+  return '';
+}
+
 export function readJsonLd(doc: Document): JobFields | null {
   const blocks = doc.querySelectorAll('script[type="application/ld+json"]');
   for (const block of Array.from(blocks)) {
@@ -28,9 +36,7 @@ export function readJsonLd(doc: Document): JobFields | null {
     }
     for (const obj of candidates(parsed)) {
       if (!isJobPosting(obj)) continue;
-      const org = obj['hiringOrganization'];
-      const company =
-        org && typeof org === 'object' ? String((org as Record<string, unknown>)['name'] ?? '') : '';
+      const company = orgName(obj['hiringOrganization']);
       return {
         company: company.trim(),
         position: String(obj['title'] ?? '').trim(),
