@@ -65,18 +65,34 @@ async function startCapture() {
       }
     }
     fillForm(fields, result.url);
-    if (status.textContent?.startsWith('Reading') || status.textContent?.startsWith('Asking')) {
-      status.textContent = 'Review & save';
-    }
+    status.textContent = 'Review & save';
     ($('f-company') as HTMLInputElement).focus();
   } catch {
     status.textContent = 'Could not read this tab. Reload the page and retry.';
   }
 }
 
+function promptUpdate(row: Record<string, unknown>, userId: string) {
+  const msg = $('capture-msg');
+  msg.className = 'msg';
+  msg.textContent = 'Already saved this link. ';
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.textContent = 'Update existing';
+  btn.addEventListener('click', async () => {
+    const { error } = await supabase
+      .from('jobs').update(row).eq('user_id', userId).eq('link', String(row.link));
+    msg.textContent = error ? 'Update failed' : 'Updated ✓';
+    if (!error) setTimeout(() => window.close(), 700);
+  });
+  msg.appendChild(btn);
+}
+
 async function save(e: Event) {
   e.preventDefault();
   const msg = $('capture-msg');
+  msg.className = 'msg';
+  msg.textContent = '';
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) { show('login'); return; }
 
@@ -94,12 +110,7 @@ async function save(e: Event) {
   if (!error) { msg.textContent = 'Saved ✓'; setTimeout(() => window.close(), 700); return; }
 
   if ((error as { code?: string }).code === '23505') {
-    if (confirm('Already saved this link. Update it?')) {
-      const { error: upErr } = await supabase
-        .from('jobs').update(row).eq('user_id', user.id).eq('link', row.link);
-      msg.textContent = upErr ? 'Update failed' : 'Updated ✓';
-      if (!upErr) setTimeout(() => window.close(), 700);
-    }
+    promptUpdate(row, user.id);
     return;
   }
 
