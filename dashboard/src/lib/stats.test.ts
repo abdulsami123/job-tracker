@@ -22,4 +22,11 @@ describe('countThisWeek', () => {
   it('returns 0 when none fall in the week', () => {
     expect(countThisWeek([job('x', '2026-01-01T00:00:00Z')], now)).toBe(0);
   });
+  it('counts a job dated today using the local week (not UTC)', () => {
+    // Local Sunday evening 2026-06-14 — in negative UTC offsets this is already
+    // Monday in UTC, which previously pushed today's jobs out of "this week".
+    const nowSundayEvening = new Date(2026, 5, 14, 19, 0, 0);
+    const jobs = [job('today', '2026-06-14T00:00:00Z')];
+    expect(countThisWeek(jobs, nowSundayEvening)).toBe(1);
+  });
 });
