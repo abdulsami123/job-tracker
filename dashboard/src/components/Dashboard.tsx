@@ -1,6 +1,6 @@
 // dashboard/src/components/Dashboard.tsx
 'use client';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import type { Job } from '@/lib/types';
 import { filterByDateRange, filterByPlatform, filterBySearch } from '@/lib/filterJobs';
 import StatsBar from './StatsBar';
@@ -21,6 +21,7 @@ export default function Dashboard({ jobs }: { jobs: Job[] }) {
     () => filterBySearch(filterByPlatform(filterByDateRange(jobs, from, to), platforms), search),
     [jobs, from, to, platforms, search],
   );
+  const closeDrawer = useCallback(() => setSelected(null), []);
 
   return (
     <main className={styles.main}>
@@ -33,7 +34,7 @@ export default function Dashboard({ jobs }: { jobs: Job[] }) {
         allPlatforms={allPlatforms} rows={filtered}
       />
       <JobsTable rows={filtered} onRowClick={setSelected} />
-      <JobDrawer job={selected} onClose={() => setSelected(null)} />
+      <JobDrawer job={selected} onClose={closeDrawer} />
     </main>
   );
 }
