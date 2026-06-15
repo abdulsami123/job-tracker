@@ -23,6 +23,11 @@ describe('toCsv', () => {
     expect(row).toContain('"Eng ""Sr"""');
     expect(row).toContain('"line1\nline2"');
   });
+  it('quotes fields containing carriage returns (CRLF)', () => {
+    const csv = toCsv([job({ id: 'a', description: 'line1\r\nline2' })]);
+    const row = csv.split('\n').slice(1).join('\n');
+    expect(row).toContain('"line1\r\nline2"');
+  });
   it('null description becomes an empty cell', () => {
     expect(toCsv([job({ id: 'a', description: null })]).split('\n')[1])
       .toBe('a,Acme,Engineer,https://x,,lever,2026-06-10T12:00:00Z');

@@ -46,4 +46,8 @@ describe('filterBySearch', () => {
   it('matches position', () => { expect(filterBySearch(jobs, 'backend').map((j) => j.id)).toEqual(['a']); });
   it('matches platform', () => { expect(filterBySearch(jobs, 'ashby').map((j) => j.id)).toEqual(['b']); });
   it('no match returns empty', () => { expect(filterBySearch(jobs, 'zzz')).toEqual([]); });
+  it('matches on link', () => {
+    const jobs = [job({ id: 'a', link: 'https://jobs.lever.co/acme/123' })];
+    expect(filterBySearch(jobs, 'lever.co').map((j) => j.id)).toEqual(['a']);
+  });
 });
