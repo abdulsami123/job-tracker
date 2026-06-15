@@ -1,0 +1,9 @@
+/* dashboard/src/components/Toolbar.module.css */
+.toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 12px; }
+.search { flex: 1 1 220px; padding: 7px 10px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); color: var(--text); }
+.date { display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--muted); }
+.date input { padding: 5px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); color: var(--text); }
+.pills { display: flex; gap: 4px; flex-wrap: wrap; }
+.pill { padding: 5px 9px; border: 1px solid var(--border); border-radius: 999px; background: var(--surface); color: var(--muted); cursor: pointer; font-size: 12px; }
+.pillOn { background: var(--accent); color: #fff; border-color: var(--accent); }
+.csv { padding: 7px 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); color: var(--text); cursor: pointer; }
